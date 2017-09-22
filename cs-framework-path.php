@@ -131,9 +131,9 @@ if( ! function_exists( 'cs_locate_template' ) ) {
  *
  */
 if ( ! function_exists( 'cs_get_option' ) ) {
-  function cs_get_option( $option_name = '', $default = '' ) {
+  function cs_get_option( $option_name = '', $default = '', $option_array = CS_OPTION ) {
 
-    $options = apply_filters( 'cs_get_option', get_option( CS_OPTION ), $option_name, $default );
+    $options = apply_filters( 'cs_get_option', get_option( $option_array ), $option_name, $default );
 
     if( ! empty( $option_name ) && ! empty( $options[$option_name] ) ) {
       return $options[$option_name];
@@ -146,6 +146,30 @@ if ( ! function_exists( 'cs_get_option' ) ) {
 
 /**
  *
+ * Get meta option
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ */
+if ( ! function_exists( 'cs_get_meta_option' ) ) {
+	function cs_get_meta_option( $option_name, $post_id = '', $default = '', $option_meta_id = CS_OPTION ) {
+
+		$post_id = ! empty( $post_id ) ? $post_id : get_the_ID();
+
+		$options = apply_filters( 'cs_get_meta_option', get_post_meta( $post_id, $option_meta_id, true ), $option_name, $post_id, $default );
+
+		if ( ! empty( $option_name ) && ! empty( $options[ $option_name ] ) && ! empty( $post_id ) ) {
+			return $options[ $option_name ];
+		} else {
+			return ( ! empty( $default ) ) ? $default : null;
+		}
+
+	}
+}
+
+/**
+ *
  * Set option
  *
  * @since 1.0.0
@@ -153,13 +177,13 @@ if ( ! function_exists( 'cs_get_option' ) ) {
  *
  */
 if ( ! function_exists( 'cs_set_option' ) ) {
-  function cs_set_option( $option_name = '', $new_value = '' ) {
+  function cs_set_option( $option_name = '', $new_value = '', $option_array = CS_OPTION ) {
 
-    $options = apply_filters( 'cs_set_option', get_option( CS_OPTION ), $option_name, $new_value );
+    $options = apply_filters( 'cs_set_option', get_option( $option_array ), $option_name, $new_value );
 
     if( ! empty( $option_name ) ) {
       $options[$option_name] = $new_value;
-      update_option( CS_OPTION, $options );
+      update_option( $option_array, $options );
     }
 
   }
@@ -174,9 +198,25 @@ if ( ! function_exists( 'cs_set_option' ) ) {
  *
  */
 if ( ! function_exists( 'cs_get_all_option' ) ) {
-  function cs_get_all_option() {
-    return get_option( CS_OPTION );
+  function cs_get_all_option( $option_array = CS_OPTION ) {
+    return get_option( $option_array );
   }
+}
+
+/**
+ *
+ * Get all meta option
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ */
+if ( ! function_exists( 'cs_get_all_meta_option' ) ) {
+	function cs_get_all_meta_option( $post_id = '', $option_array = CS_OPTION ) {
+		$post_id = ! empty( $post_id ) ? $post_id : get_the_ID();
+
+		return get_post_meta( $post_id, $option_array, true );
+	}
 }
 
 /**

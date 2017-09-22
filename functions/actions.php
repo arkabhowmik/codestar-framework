@@ -61,7 +61,9 @@ if( ! function_exists( 'cs_export_options' ) ) {
     header('Pragma: no-cache');
     header('Expires: 0');
 
-    echo cs_encode_string( get_option( CS_OPTION ) );
+    $option_array = ! empty( $_GET['option_array'] ) ? $_GET['option_array'] : CS_OPTION;
+
+    echo cs_encode_string( get_option( $option_array ) );
 
     die();
   }
