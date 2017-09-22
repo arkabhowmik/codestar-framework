@@ -68,11 +68,12 @@ class CSFramework extends CSFramework_Abstract {
 
     $this->settings = apply_filters( 'cs_framework_settings', $settings );
     $this->options  = apply_filters( 'cs_framework_options', $options );
+    $this->unique   = ! empty( $settings['option_array'] ) ? $settings['option_array'] : $this->unique;
 
     if( ! empty( $this->options ) ) {
 
       $this->sections   = $this->get_sections();
-      $this->get_option = get_option( CS_OPTION );
+      $this->get_option = get_option( $this->unique );
       $this->addAction( 'admin_init', 'settings_api' );
       $this->addAction( 'admin_menu', 'admin_menu' );
 
@@ -82,7 +83,8 @@ class CSFramework extends CSFramework_Abstract {
 
   // instance
   public static function instance( $settings = array(), $options = array() ) {
-    if ( is_null( self::$instance ) && CS_ACTIVE_FRAMEWORK ) {
+    //if ( is_null( self::$instance ) && CS_ACTIVE_FRAMEWORK ) {
+    if ( CS_ACTIVE_FRAMEWORK ) {
       self::$instance = new self( $settings, $options );
     }
     return self::$instance;
@@ -130,11 +132,11 @@ class CSFramework extends CSFramework_Abstract {
 
       if( isset( $section['fields'] ) ) {
 
-        add_settings_section( $section['name'] .'_section', $section['title'], '', $section['name'] .'_section_group' );
+        add_settings_section( $section['name'] .'_section', $section['title'], '', $section['name'] . '_' . $this->unique . '_section_group' );
 
         foreach( $section['fields'] as $field_key => $field ) {
 
-          add_settings_field( $field_key .'_field', '', array( &$this, 'field_callback' ), $section['name'] .'_section_group', $section['name'] .'_section', $field );
+          add_settings_field( $field_key .'_field', '', array( &$this, 'field_callback' ), $section['name'] . '_' . $this->unique . '_section_group', $section['name'] .'_section', $field );
 
           // set default option if isset
           if( isset( $field['default'] ) ) {
@@ -440,7 +442,7 @@ class CSFramework extends CSFramework_Abstract {
               $active_content = ( $section_id == $section['name'] ) ? ' style="display: block;"' : '';
               echo '<div id="cs-tab-'. $section['name'] .'" class="cs-section"'. $active_content .'>';
               echo ( isset( $section['title'] ) && empty( $has_nav ) ) ? '<div class="cs-section-title"><h3>'. $section['title'] .'</h3></div>' : '';
-              $this->do_settings_sections( $section['name'] . '_section_group' );
+              $this->do_settings_sections( $section['name'] . '_' . $this->unique . '_section_group' );
               echo '</div>';
 
             }
